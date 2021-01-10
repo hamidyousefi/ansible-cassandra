@@ -1,0 +1,9 @@
+---
+- name: import global handlers
+  import_tasks: handlers/global.yml
+
+- name: enable and start cassandra
+  systemd:
+    name: cassandra
+    state: started
+    enabled: yes

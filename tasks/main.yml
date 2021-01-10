@@ -1,0 +1,4 @@
+---
+- name: setup cassandra
+  import_tasks: setup.yml
+  tags: setup

@@ -1,0 +1,43 @@
+---
+- name: proceed installing cassandra
+  block:
+    - name: install necessary packages
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - dirmngr
+          - gnupg
+          - software-properties-common
+        update_cache: yes
+        force_apt_get: yes
+
+    - name: add necessary apt keys
+      apt_key:
+        url: https://www.apache.org/dist/cassandra/KEYS
+        state: present
+      environment:
+        http_proxy: "{{ proxy.http | default('') }}"
+        https_proxy: "{{ proxy.https | default(proxy.http) }}"
+
+    - name: add cassandra official repository
+      apt_repository:
+        repo: deb https://downloads.apache.org/cassandra/debian 311x main
+        filename: cassandra
+        state: present
+      environment:
+        http_proxy: "{{ proxy.http | default('') }}"
+        https_proxy: "{{ proxy.https | default(proxy.http) }}"
+
+    - name: install main packages
+      apt:
+        name: cassandra
+        update_cache: yes
+        state: present
+      environment:
+        http_proxy: "{{ proxy.http | default('') }}"
+        https_proxy: "{{ proxy.https | default(proxy.http) }}"
+      notify: enable and start cassandra
+  when:
+    - ansible_distribution == 'Debian'
+    - ansible_distribution_release == 'stretch'
